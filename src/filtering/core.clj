@@ -20,14 +20,10 @@
 (defn get-id [records]
   (reduce conj #{} (map :id records)))
 
-(defn filter-by [criteria records]
-  (loop [ids (get-id records)
-         recs (take-by-id (first ids) records)
-         filtered []]
-    (if (empty? recs)
-      filtered
-      (recur (disj ids (first ids))
-             (take-by-id (first (rest ids)) records)
-             (if (has-all? criteria recs)
-               (conj filtered recs)
-               filtered)))))
+(defn satisfy? [criteria records-id]
+  (if (has-all? criteria records-id)
+    records-id
+    []))
+
+(defn filter-by-criteria [criteria records]
+  (reduce into (map #(satisfy? (first criteria) (take-by-id % records)) (get-id records))))

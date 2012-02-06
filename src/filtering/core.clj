@@ -1,4 +1,5 @@
-(ns filtering.core)
+(ns filtering.core
+  (:require clojure.set))
 
 ;; Pre: records are sorted by id
 (def records [{:id 10 :cat 12 :div 16}
@@ -6,19 +7,10 @@
               {:id 11 :cat 12 :div 18}
               {:id 11 :cat 22 :div 19}])
 
-(def criteria {:cat #{11 12}})
-
-(defn take-by-id [id records]
-  (filter #(= (:id %) id) records))
-
-(defn take-vals [criteria records]
-  (reduce conj #{} (map (key criteria) records)))
-
 (defn has-all? [criteria records]
-  (clojure.set/subset? (val criteria) (take-vals criteria records)))
-
-(defn get-id [records]
-  (reduce conj #{} (map :id records)))
+  (letfn [(take-vals [criteria records]
+            (reduce conj #{} (map (key criteria) records)))]
+    (clojure.set/subset? (val criteria) (take-vals criteria records))))
 
 (defn satisfy? [criteria records-id]
   (if (has-all? criteria records-id)
@@ -26,4 +18,15 @@
     []))
 
 (defn filter-by-criteria [criteria records]
-  (reduce into (map #(satisfy? (first criteria) (take-by-id % records)) (get-id records))))
+  (letfn [(get-id [records]
+            (reduce conj #{} (map :id records)))
+          (take-by-id [id records]
+            (filter #(= (:id %) id) records))]
+    (reduce into
+            (map #(satisfy? (first criteria) (take-by-id % records))
+                 (get-id records)))))
+
+;; Esempi
+(filter-by-criteria {:div #{18 19}} records)
+(filter-by-criteria {:cat #{12}} records)
+(filter-by-criteria {:div #{11 12}} records)

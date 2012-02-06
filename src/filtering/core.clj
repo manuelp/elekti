@@ -29,3 +29,15 @@
 (filter-by-criteria {:div #{18 19}} records)
 (filter-by-criteria {:cat #{12}} records)
 (filter-by-criteria {:div #{11 12}} records)
+
+(defn random-records
+  "Genera molt record per num id."
+  [num molt]
+  (let [take-random (fn [] (inc (rand-int 100)))]
+    (map #(hash-map :id % :cat (take-random) :div (take-random))
+         (reduce into (map #(repeat molt %) (range num))))))
+
+;; Esempio con timing
+;(time (filter-by-criteria {:div #{18 19}} (random-records 1000 10)))
+
+

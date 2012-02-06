@@ -1,7 +1,6 @@
 (ns filtering.core
   (:require clojure.set))
 
-;; Pre: records are sorted by id
 (def records [{:id 10 :cat 12 :div 16}
               {:id 10 :cat 11 :div 15}
               {:id 11 :cat 12 :div 18}

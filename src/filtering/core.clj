@@ -22,7 +22,7 @@
           (take-by-id [id records]
             (filter #(= (:id %) id) records))]
     (reduce into
-            (map #(satisfy? (first criteria) (take-by-id % records))
+            (pmap #(satisfy? (first criteria) (take-by-id % records))
                  (get-id records)))))
 
 ;; Esempi
